@@ -11,11 +11,11 @@ class Row():
 
     def __place_buttons(self):
         for serial_number in range(len(self.__buttons)):
-            # if serial_number > 0:
-            #     past_width = self.__buttons[serial_number - 1][self.__width]
-            # else:
-            #     past_width = Null
-            self.__buttons[serial_number].place(serial_number)
+            previous_width = 0
+            if serial_number > 0:
+                previous_width = self.__buttons[serial_number - 1].width
+
+            self.__buttons[serial_number].place(serial_number, previous_width)
 
     def place(self, pad, y_for_rows, btn_and_pad):
         self.__frame.place(

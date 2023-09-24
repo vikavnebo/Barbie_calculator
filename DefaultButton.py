@@ -9,7 +9,7 @@ class DefaultButton(Button):
         self.__fg = WHITE
         self.__padding = 14
 
-        self.__width = width
+        self.width = width
         self.__height = height
 
 
@@ -17,10 +17,6 @@ class DefaultButton(Button):
                          font = font_style, command = cmd,
                          relief = self.__relief, fg = self.__fg)
 
-    def place(self, serial_number):
-        if self['text'] == 'C':
-            past_width = 208
-        else:
-            past_width = self.__width
-        x = (self.__padding + past_width) * serial_number
-        super().place(x = x, width = self.__width, height = self.__height)
+    def place(self, serial_number, previous_width):
+        x = (self.__padding + previous_width) * serial_number
+        super().place(x = x, width = self.width, height = self.__height)
