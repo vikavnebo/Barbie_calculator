@@ -17,8 +17,9 @@ class Calculator:
         self.main_frame = self.create_main_frame()
         self.result_frame = self.create_result_frame()
 
-        self.result_lable = self.create_result_lable()
-        self.result_lable = self.create_history()
+        self.total_expression = '0'
+        self.current_expression = '0'
+        self.total_lable, self.lable = self.create_lable()
 
     def create_main_frame(self):
         frame = Frame(self.root, bg=WHITE)
@@ -31,17 +32,16 @@ class Calculator:
         # frame.pack(expand=True, fill='both')
         return frame
 
-    def create_result_lable(self):
-        lable = Label(self.result_frame, text='0', bg=LIGHT_PINK,
+    def create_lable(self):
+        total_lable = Label(self.result_frame, text=self.current_expression, bg=LIGHT_PINK,
                       fg=WHITE, font=('Arial', 32, 'bold'))
-        lable.place(x=25, y=61)
-        return lable
+        total_lable.place(x=25, y=61)
 
-    def create_history(self):
-        lable = Label(self.result_frame, text='', bg=LIGHT_PINK,
+        lable = Label(self.result_frame, text=self.total_expression, bg=LIGHT_PINK,
                         fg=WHITE, font=('Arial', 16))
         lable.place(x=25, y=25)
-        return lable
+
+        return total_lable, lable
 
     def initialize_interface(self):
         rows = []
