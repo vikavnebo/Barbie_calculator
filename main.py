@@ -103,7 +103,7 @@ class Calculator:
         self.total_lable.config(text=expression)
 
     def update_lable(self):
-        if self.current_expression in ['Division by 0', 'Data error]:
+        if self.current_expression in ['Division by 0', 'Data error']:
             self.lable.config(text=self.current_expression)
         else:
             self.lable.config(text=self.current_expression[:12])
