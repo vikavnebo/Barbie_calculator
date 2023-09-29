@@ -4,3 +4,5 @@
 /pyvenv.cfg
 /Lib/
 /Scripts/
+/build/
+/BarbieCalculator.spec

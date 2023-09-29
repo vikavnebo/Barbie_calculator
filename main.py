@@ -1,5 +1,4 @@
 from tkinter import Tk, Frame, Button, Label, messagebox
-
 from colors import *
 from buttons import *
 from Row import *
@@ -28,7 +27,6 @@ class Calculator:
     def create_result_frame(self):
         frame = Frame(self.root, bg=LIGHT_PINK, height=122)
         frame.place(relwidth=1, height=122)
-        # frame.pack(expand=True, fill='both')
         return frame
 
     def create_lable(self):
