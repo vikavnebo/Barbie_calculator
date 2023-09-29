@@ -1,9 +1,8 @@
 from tkinter import Tk, Frame, Button, Label, messagebox
 
 from colors import *
-from ButtonFactory import *
+from buttons import *
 from Row import *
-from Calculate_Utils import *
 
 
 class Calculator:
@@ -34,12 +33,12 @@ class Calculator:
 
     def create_lable(self):
         total_lable = Label(self.result_frame, text=self.total_expression, bg=LIGHT_PINK,
-                            fg=WHITE, font=('Arial', 16))
-        total_lable.place(x=25, y=25)
+                            fg=WHITE, font=('Arial', 20))
+        total_lable.place(x=14, y=18)
 
         lable = Label(self.result_frame, text=self.current_expression, bg=LIGHT_PINK,
                       fg=WHITE, font=('Arial', 32, 'bold'))
-        lable.place(x=25, y=61)
+        lable.place(x=12, y=61)
 
         return total_lable, lable
 
@@ -75,10 +74,21 @@ class Calculator:
             row.place(pad=14, y_for_rows=136, btn_and_pad=74)
 
     def add_to_expression(self, value):
+        if self.current_expression in ['Division by 0', 'Data error']:
+            self.current_expression = ''
         self.current_expression += value
         self.update_lable()
 
+    def number_verification(self, number):
+        i = 0
+        while len(number) > 1 and number[0] == '0' and number[1] != '.':
+            number = number[1:]
+        if len(number) > 1 and number[0] == '.':
+            number = '0' + number
+        return number
+
     def append_operator(self, operator):
+        self.current_expression = self.number_verification(self.current_expression)
         self.current_expression += operator
         self.total_expression += self.current_expression
         self.current_expression = ''
@@ -86,20 +96,30 @@ class Calculator:
         self.update_lable()
 
     def update_total_lable(self):
-        self.total_lable.config(text=self.total_expression)
+        expression = self.total_expression
+        operators = {'**': '^', '*': '\u00D7', '/': '\u00F7', '+': '+', '-': '-'}
+        for operator, symbol in operators.items():
+            expression = expression.replace(operator, symbol)
+        self.total_lable.config(text=expression)
 
     def update_lable(self):
-        self.lable.config(text=self.current_expression)
+        if self.current_expression in ['Division by 0', 'Data error']:
+            self.lable.config(text=self.current_expression)
+        else:
+            self.lable.config(text=self.current_expression[:12])
 
     def evaluate(self):
-        self.total_expression += self.current_expression
+        self.total_expression += self.number_verification(self.current_expression)
         self.update_total_lable()
-
-        self.current_expression = str(eval(self.total_expression))
-
-        self.total_expression = ''
-        self.update_lable()
-
+        try:
+            self.current_expression = str(eval(self.total_expression))
+        except ZeroDivisionError:
+            self.current_expression = 'Division by 0'
+        except:
+            self.current_expression = 'Data error'
+        finally:
+            self.total_expression = ''
+            self.update_lable()
 
     def clear(self):
         self.current_expression = ''
