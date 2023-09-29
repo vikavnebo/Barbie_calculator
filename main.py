@@ -1,172 +1,84 @@
-from tkinter import *
-from tkinter import messagebox
+from tkinter import Tk, Frame, Button, Label, messagebox
+
+from colors import *
+from ButtonFactory import *
+from Row import *
+from Calculate_Utils import *
 
 
-def click_numbers(number):
-    cur_num = e.get()
-    e.delete(0, END)
-    global new_num
-    new_num = cur_num + number
-    lenght_num = len(new_num)
-    while lenght_num > 1 and new_num[0] == '0':
-        new_num = new_num[1 :]
-    if lenght_num > 2 and new_num[lenght_num - 3 : lenght_num - 1] == ' 0':
-        new_num = new_num[:lenght_num - 2] + new_num[lenght_num - 1]
-    e.insert(0, new_num)
-    # print(f'cur_num = {cur_num}, new_num = {new_num}')
-    return new_num
+class Calculator:
+    def __init__(self):
+        self.root = Tk()
+        self.root.geometry('310x506')
+        self.root.resizable(0, 0)
+        self.root.title('Barbie Calculator')
+        self.root.iconbitmap('calc.ico')
 
-def click_clear():
-    e.delete(0, END)
-    l['text'] = ''
+        self.main_frame = self.create_main_frame()
+        self.result_frame = self.create_result_frame()
 
-def click_add():
-    first_num = new_num
-    global view
-    view = f'{first_num} + '
-    e.delete(0, END)
-    e.insert(0, view)
-    # print(f'view = {view}')
-    return view
+        self.result_lable = self.create_result_lable()
+        self.result_lable = self.create_history()
 
-def click_equal():
-    nums = e.get()
-    l['text'] = f'{nums} ='
-    nums = [int(num) for num in (nums).split(' + ') if num]
-    print(nums)
-    global total
-    total = sum(nums)
-    global new_num
-    new_num = total
-    e.delete(0, END)
-    e.insert(0, total)
-    # print(f'total = {total}')
-    return total, new_num
+    def create_main_frame(self):
+        frame = Frame(self.root, bg=WHITE)
+        frame.place(relwidth=1, relheight=1)
+        return frame
 
+    def create_result_frame(self):
+        frame = Frame(self.root, bg=LIGHT_PINK, height=122)
+        frame.place(relwidth=1, height=122)
+        # frame.pack(expand=True, fill='both')
+        return frame
 
-window_width = 310
-window_height = 506
-window_size = f'{window_width}x{window_height}'
+    def create_result_lable(self):
+        lable = Label(self.result_frame, text='0', bg=LIGHT_PINK,
+                      fg=WHITE, font=('Arial', 32, 'bold'))
+        lable.place(x=25, y=61)
+        return lable
 
-root = Tk()
-root.iconbitmap('calc.ico')
-root.title('Barbie Calculator')
-root.geometry(window_size)
-root.resizable(width=False, height=False)
-main_frame = Frame(root, bg='white')
-main_frame.place(relwidth=1, relheight=1)
+    def create_history(self):
+        lable = Label(self.result_frame, text='', bg=LIGHT_PINK,
+                        fg=WHITE, font=('Arial', 16))
+        lable.place(x=25, y=25)
+        return lable
 
-# results
-result_frame_height = 122
-result_frame = Frame(root, bg='#F1AAD5')
-result_frame.place(width=window_width, height=result_frame_height)
+    def initialize_interface(self):
+        rows = []
+        for row_number in range(5):
+            rows.append(Row(row_number, Frame(self.main_frame, bg=WHITE)))
 
-e = Entry(result_frame, width=window_width, borderwidth=0,
-          bg='#F1AAD5', fg='white', font=('Arial', 32, 'bold'))
-e.place(x=25, y=61)
-e.insert(0, '0')
+        rows[0].append_button(ButtonTypes.SIGN, '=', lambda x: True, width = 208)
+        rows[0].append_button(ButtonTypes.SIGN, 'C', lambda x: True)
 
-l = Label(result_frame, text='', bg='#F1AAD5',
-          fg='white', font=('Arial', 16))
-l.place(x=25, y=25)
+        rows[1].append_button(ButtonTypes.NUMBER, '1', lambda x: True)
+        rows[1].append_button(ButtonTypes.NUMBER, '2', lambda x: True)
+        rows[1].append_button(ButtonTypes.NUMBER, '3', lambda x: True)
+        rows[1].append_button(ButtonTypes.SIGN, '+', lambda x: True)
 
-# sizes for buttons
-btn_size = 60
-pad = 14
-y_for_rows = result_frame_height + pad
-btn_and_pad = btn_size + pad
+        rows[2].append_button(ButtonTypes.NUMBER, '4', lambda x: True)
+        rows[2].append_button(ButtonTypes.NUMBER, '5', lambda x: True)
+        rows[2].append_button(ButtonTypes.NUMBER, '6', lambda x: True)
+        rows[2].append_button(ButtonTypes.SIGN, '-', lambda x: True)
 
-# row 0
-row_0 = Frame(main_frame, bg='white')
-row_0.place(x=pad, y=y_for_rows, height=btn_and_pad, relwidth=1)
+        rows[3].append_button(ButtonTypes.NUMBER, '7', lambda x: True)
+        rows[3].append_button(ButtonTypes.NUMBER, '8', lambda x: True)
+        rows[3].append_button(ButtonTypes.NUMBER, '9', lambda x: True)
+        rows[3].append_button(ButtonTypes.SIGN, 'x', lambda x: True)
 
-btn_eq = Button(row_0, text='═', bg='#F377C2', relief='flat',
-                font=('Arial', 20, 'bold'), fg="white", command=click_equal)
-btn_eq.place(width=208, height=btn_size)
+        rows[4].append_button(ButtonTypes.SIGN, '^', lambda x: True)
+        rows[4].append_button(ButtonTypes.NUMBER, '0', lambda x: True)
+        rows[4].append_button(ButtonTypes.SIGN, '√', lambda x: True)
+        rows[4].append_button(ButtonTypes.SIGN, '/', lambda x: True)
 
-btn_c = Button(row_0, text='C', bg='#F377C2', relief='flat',
-               font=('Arial', 20, 'bold'), fg="white", command=click_clear)
-btn_c.place(x=208 + 14, width=btn_size, height=btn_size)
+        for row in rows:
+            row.place(pad=14, y_for_rows=136, btn_and_pad=74)
 
-# row 1
-row_1 = Frame(main_frame, bg='white')
-row_1.place(x=pad, y=y_for_rows + btn_and_pad, height=btn_and_pad, relwidth=1)
-
-btn_1 = Button(row_1, text='1', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('1'))
-btn_1.place(width=btn_size, height=btn_size)
-
-btn_2 = Button(row_1, text='2', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('2'))
-btn_2.place(x=btn_and_pad, width=btn_size, height=btn_size)
-
-btn_3 = Button(row_1, text='3', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('3'))
-btn_3.place(x=btn_and_pad * 2, width=btn_size, height=btn_size)
-
-btn_add = Button(row_1, text='+', font=('Arial', 20, 'bold'), relief='flat',
-                 bg='#F1AAD5', fg="white", command=click_add)
-btn_add.place(x=btn_and_pad * 3, width=btn_size, height=btn_size)
-
-# row 2
-row_2 = Frame(main_frame, bg='white')
-row_2.place(x=pad, y=y_for_rows + btn_and_pad * 2, height=btn_and_pad, relwidth=1)
-
-btn_4 = Button(row_2, text='4', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('4'))
-btn_4.place(width=btn_size, height=btn_size)
-
-btn_5 = Button(row_2, text='5', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('5'))
-btn_5.place(x=btn_and_pad, width=btn_size, height=btn_size)
-
-btn_6 = Button(row_2, text='6', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('6'))
-btn_6.place(x=btn_and_pad * 2, width=btn_size, height=btn_size)
-
-btn_dif = Button(row_2, text='-', font=('Arial', 20, 'bold'), relief='flat',
-                 bg='#F1AAD5', fg="white", command=lambda: click_numbers(1))
-btn_dif.place(x=btn_and_pad * 3, width=btn_size, height=btn_size)
-
-# row 3
-row_3 = Frame(main_frame, bg='white')
-row_3.place(x=pad, y=y_for_rows + btn_and_pad * 3, height=btn_and_pad, relwidth=1)
-
-btn_7 = Button(row_3, text='7', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('7'))
-btn_7.place(width=btn_size, height=btn_size)
-
-btn_8 = Button(row_3, text='8', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('8'))
-btn_8.place(x=btn_and_pad, width=btn_size, height=btn_size)
-
-btn_9 = Button(row_3, text='9', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('9'))
-btn_9.place(x=btn_and_pad * 2, width=btn_size, height=btn_size)
-
-btn_mul = Button(row_3, text='×', font=('Arial', 20, 'bold'), relief='flat',
-                 bg='#F1AAD5', fg="white", command=lambda: click_numbers(1))
-btn_mul.place(x=btn_and_pad * 3, width=btn_size, height=btn_size)
-
-# row 4
-row_4 = Frame(main_frame, bg='white')
-row_4.place(x=pad, y=y_for_rows + btn_and_pad * 4, height=btn_and_pad, relwidth=1)
-
-btn_pow = Button(row_4, text='^', font=('Arial', 20, 'bold'), relief='flat',
-                 bg='#F1AAD5', fg="white", command=lambda: click_numbers(1))
-btn_pow.place(width=btn_size, height=btn_size)
-
-btn_0 = Button(row_4, text='0', font=('Arial', 20), relief='flat',
-               bg='#F377C2', fg="white", command=lambda: click_numbers('0'))
-btn_0.place(x=btn_and_pad, width=btn_size, height=btn_size)
-
-btn_sqrt = Button(row_4, text='√', font=('Arial', 20, 'bold'), relief='flat',
-                  bg='#F1AAD5', fg="white", command=lambda: click_numbers(1))
-btn_sqrt.place(x=btn_and_pad * 2, width=btn_size, height=btn_size)
-
-btn_div = Button(row_4, text='/', font=('Arial', 20, 'bold'), relief='flat',
-                 bg='#F1AAD5', fg="white", command=lambda: click_numbers(1))
-btn_div.place(x=btn_and_pad * 3, width=btn_size, height=btn_size)
+    def run(self):
+        self.initialize_interface()
+        self.root.mainloop()
 
 
-root.mainloop()
+if __name__ == '__main__':
+    calc = Calculator()
+    calc.run()
